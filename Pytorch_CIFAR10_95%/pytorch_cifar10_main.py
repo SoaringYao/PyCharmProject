@@ -56,8 +56,10 @@ def train(epoch):
         train_acc = correct / total
         # 每训练100个batch打印一次训练集的loss和准确率
         if (batch_idx + 1) % 100 == 0:
-            print('[INFO] Epoch-{}-Batch-{}: Train: Loss-{:.4f}, Accuracy-{:.4f}'.format(epoch + 1, batch_idx + 1,
-                                                                                         loss.item(), train_acc))
+            print('[INFO] Epoch-{}-Batch-{}: Train: Loss-{:.4f}, Accuracy-{:.4f}'.format(epoch + 1,
+                                                                                         batch_idx + 1,
+                                                                                         loss.item(),
+                                                                                         train_acc))
     # 计算每个epoch内训练集的acc
     total_train_acc.append(train_acc)
 
@@ -82,7 +84,8 @@ def test(epoch, ckpt):
             correct += predicted.eq(targets).sum().item()
 
         test_acc = correct / total
-        print('[INFO] Epoch-{}-Test Accurancy: {:.3f}'.format(epoch + 1, test_acc), '\n')
+        print(
+            '[INFO] Epoch-{}-Test Accurancy: {:.3f}'.format(epoch + 1, test_acc), '\n')
 
     total_test_acc.append(test_acc)
 
@@ -90,7 +93,11 @@ def test(epoch, ckpt):
     acc = 100. * correct / total
     if acc > best_acc:
         print('Saving..')
-        state = {'net': model.state_dict(), 'acc': acc, 'epoch': epoch, }
+        state = {
+            'net': model.state_dict(),
+            'acc': acc,
+            'epoch': epoch,
+        }
         if not os.path.isdir('checkpoint'):
             os.mkdir('checkpoint')
         torch.save(state, ckpt)
@@ -113,23 +120,33 @@ if __name__ == '__main__':
     device = torch.device('cuda:0') if torch.cuda.is_available() else 'cpu'
     best_acc = 0  # best test accuracy
     start_epoch = 0  # start from epoch 0 or last checkpoint epoch
-    classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+    classes = ('plane', 'car', 'bird', 'cat', 'deer',
+               'dog', 'frog', 'horse', 'ship', 'truck')
 
     # 设置数据增强
     print('==> Preparing data..')
-    transform_train = transforms.Compose(
-        [transforms.RandomCrop(32, padding=4), transforms.RandomHorizontalFlip(), transforms.ToTensor(),
-            transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)), ])
+    transform_train = transforms.Compose([
+        transforms.RandomCrop(32, padding=4),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+    ])
 
-    transform_test = transforms.Compose(
-        [transforms.ToTensor(), transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)), ])
+    transform_test = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+    ])
 
     # 加载CIFAR10数据集
-    trainset = torchvision.datasets.CIFAR10(root=opt.data, train=True, download=True, transform=transform_train)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=opt.batch_size, shuffle=True, num_workers=2)
+    trainset = torchvision.datasets.CIFAR10(
+        root=opt.data, train=True, download=True, transform=transform_train)
+    trainloader = torch.utils.data.DataLoader(
+        trainset, batch_size=opt.batch_size, shuffle=True, num_workers=2)
 
-    testset = torchvision.datasets.CIFAR10(root=opt.data, train=False, download=True, transform=transform_test)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=100, shuffle=False, num_workers=2)
+    testset = torchvision.datasets.CIFAR10(
+        root=opt.data, train=False, download=True, transform=transform_test)
+    testloader = torch.utils.data.DataLoader(
+        testset, batch_size=100, shuffle=False, num_workers=2)
 
     # print(trainloader.dataset.shape)
 
@@ -154,7 +171,8 @@ if __name__ == '__main__':
 
     # 设置损失函数与优化器
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), lr=opt.lr, momentum=0.9, weight_decay=5e-4)
+    optimizer = optim.SGD(model.parameters(), lr=opt.lr,
+                          momentum=0.9, weight_decay=5e-4)
 
     # 余弦退火有序调整学习率
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=opt.T_max)
@@ -174,7 +192,9 @@ if __name__ == '__main__':
         train(epoch)
         test(epoch, opt.checkpoint)
         # 动态调整学习率
-        scheduler.step()  # ReduceLROnPlateau（自适应调整学习率）  # scheduler.step(loss_val)
+        scheduler.step()
+        # ReduceLROnPlateau（自适应调整学习率）
+        # scheduler.step(loss_val)
 
     # 数据可视化
     plt.figure()
