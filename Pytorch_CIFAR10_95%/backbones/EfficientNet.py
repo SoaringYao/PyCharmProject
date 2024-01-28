@@ -32,10 +32,8 @@ class SE(nn.Module):
 
     def __init__(self, in_channels, se_channels):
         super(SE, self).__init__()
-        self.se1 = nn.Conv2d(in_channels, se_channels,
-                             kernel_size=1, bias=True)
-        self.se2 = nn.Conv2d(se_channels, in_channels,
-                             kernel_size=1, bias=True)
+        self.se1 = nn.Conv2d(in_channels, se_channels, kernel_size=1, bias=True)
+        self.se2 = nn.Conv2d(se_channels, in_channels, kernel_size=1, bias=True)
 
     def forward(self, x):
         out = F.adaptive_avg_pool2d(x, (1, 1))
@@ -48,8 +46,7 @@ class SE(nn.Module):
 class Block(nn.Module):
     '''MobileNetv2(expansion + depthwise + pointwise) + SENet(squeeze-excitation)'''
 
-    def __init__(self, in_channels, out_channels, kernel_size,
-                 stride, expand_ratio=1, se_ratio=0., drop_rate=0.):
+    def __init__(self, in_channels, out_channels, kernel_size, stride, expand_ratio=1, se_ratio=0., drop_rate=0.):
         super(Block, self).__init__()
         self.stride = stride
         self.drop_rate = drop_rate
@@ -93,8 +90,7 @@ class EfficientNet(nn.Module):
     def __init__(self, cfg, num_classes=10):
         super(EfficientNet, self).__init__()
         self.cfg = cfg
-        self.conv1 = nn.Conv2d(3, 32, kernel_size=3,
-                               stride=1, padding=1, bias=False)
+        self.conv1 = nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1, bias=False)
         self.bn1 = nn.BatchNorm2d(32)
 
         # 搭建EfficientNet的网络架构
@@ -104,8 +100,7 @@ class EfficientNet(nn.Module):
 
     def _make_layers(self, in_channels):
         layers = []
-        cfg = [self.cfg[k] for k in ['expansion', 'out_channels', 'num_blocks', 'kernel_size',
-                                     'stride']]
+        cfg = [self.cfg[k] for k in ['expansion', 'out_channels', 'num_blocks', 'kernel_size', 'stride']]
 
         # DropConnect函数中的关联参数
         # b=0则不采用DropConnect
@@ -115,9 +110,8 @@ class EfficientNet(nn.Module):
             strides = [stride] + [1] * (num_blocks - 1)
             for stride in strides:
                 drop_rate = self.cfg['drop_connect_rate'] * b / blocks
-                layers.append(
-                    Block(in_channels, out_channels, kernel_size, stride, expansion, se_ratio=0.25,
-                          drop_rate=drop_rate))
+                layers.append(Block(in_channels, out_channels, kernel_size, stride, expansion, se_ratio=0.25,
+                                    drop_rate=drop_rate))
                 in_channels = out_channels
 
         return nn.Sequential(*layers)
@@ -136,13 +130,7 @@ class EfficientNet(nn.Module):
 
 def EfficientNetB0():
     # 原论文中Table 1中的网络参数
-    cfg = {
-        'num_blocks': [1, 2, 2, 3, 3, 4, 1],
-        'expansion': [1, 6, 6, 6, 6, 6, 6],
-        'out_channels': [16, 24, 40, 80, 112, 192, 320],
-        'kernel_size': [3, 3, 5, 3, 5, 5, 3],
-        'stride': [1, 2, 2, 2, 1, 2, 1],
-        'dropout_rate': 0.2,
-        'drop_connect_rate': 0.2,
-    }
+    cfg = {'num_blocks': [1, 2, 2, 3, 3, 4, 1], 'expansion': [1, 6, 6, 6, 6, 6, 6],
+        'out_channels': [16, 24, 40, 80, 112, 192, 320], 'kernel_size': [3, 3, 5, 3, 5, 5, 3],
+        'stride': [1, 2, 2, 2, 1, 2, 1], 'dropout_rate': 0.2, 'drop_connect_rate': 0.2, }
     return EfficientNet(cfg)

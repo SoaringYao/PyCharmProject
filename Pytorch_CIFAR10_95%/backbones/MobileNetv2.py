@@ -3,7 +3,6 @@
 See the paper "Inverted Residuals and Linear Bottlenecks:
 Mobile Networks for Classification, Detection and Segmentation" for more details.
 '''
-import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -96,7 +95,6 @@ class MobileNetv2(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.linear(out)
         return out
-
 
 # def MobileNetv2():
 #     return MobileNetv2_Main()

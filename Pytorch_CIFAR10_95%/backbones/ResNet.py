@@ -4,8 +4,8 @@ https://www.jianshu.com/p/0df349249b12
 """
 import torch
 import torch.nn as nn
-import torchvision
 import torch.nn.functional as F
+import torchvision
 
 print('torch_version: ', torch.__version__)
 print('torchvision_version: ', torchvision.__version__)

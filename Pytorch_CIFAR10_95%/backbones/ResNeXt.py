@@ -2,7 +2,6 @@
 
 See the paper "Aggregated Residual Transformations for Deep Neural Networks" for more details.
 '''
-import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -71,7 +70,7 @@ class ResNeXt(nn.Module):
         # self.layer4 = self._make_layer(num_blocks[3], 2)
 
         # 如果是resnext29，num_blocks=[3, 3, 3]
-        self.linear = nn.Linear(cardinality*bottleneck_width*8, num_classes)
+        self.linear = nn.Linear(cardinality * bottleneck_width * 8, num_classes)
         # self.linear = nn.Linear(cardinality * bottleneck_width * 16, num_classes)
 
     def _make_layer(self, num_blocks, stride):

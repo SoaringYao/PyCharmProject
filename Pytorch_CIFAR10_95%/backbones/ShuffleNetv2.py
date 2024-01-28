@@ -171,7 +171,6 @@ configs = {
     }
 }
 
-
 # def test():
 #     net = ShuffleNetV2(net_size=1)
 #     x = torch.randn(3, 3, 32, 32)
