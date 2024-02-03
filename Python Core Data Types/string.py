@@ -34,7 +34,7 @@ S = 'Spam'
 print(S.find('pa'))  # find方法 1 返回找到时的偏移量
 print(S.find('z'))  # -1 未找到
 print(S.replace('pa', 'XYZ'))  # replace方法 SXYZm
-print(S.upper())  # upper()/lower() Upper- and lowercase conversions
+print(S.upper())  # upper()/lower() Upper-  and lowercase conversions
 print(S.isalpha())  # Content tests: isalpha, isdigit, isalnum,
 # isspace, istitle(Check if each word start with an uppercase letter)
 

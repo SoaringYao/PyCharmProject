@@ -15,3 +15,5 @@ print(f'{L}\n')
 
 L.remove('spam')
 print(f'{L}\n')
+
+
