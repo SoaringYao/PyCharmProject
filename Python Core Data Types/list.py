@@ -23,3 +23,16 @@ print(f'{L}\n')
 
 L.remove('spam')
 print(f'{L}\n')  # [123, 1.23]
+
+M = ['bb', 'aa', 'dd', 'cc']
+M.sort()  # 对列表进行排序
+print(f'{M}\n')  # ['aa', 'bb', 'cc', 'dd']
+
+M.reverse()  # 翻转列表
+print(f'{M}\n')  # ['dd', 'cc', 'bb', 'aa']
+
+# python的边界检查
+# N = [1, 2, 3]
+# print(f'{N[99]}\n')   IndexError: list index out of range
+# N[99] = 1   IndexError: list assignment index out of range
+# 避免了对内存进行危险的越界操作
