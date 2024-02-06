@@ -36,3 +36,11 @@ print(f'{M}\n')  # ['dd', 'cc', 'bb', 'aa']
 # print(f'{N[99]}\n')   IndexError: list index out of range
 # N[99] = 1   IndexError: list assignment index out of range
 # 避免了对内存进行危险的越界操作
+
+# 嵌套
+M = [[1, 2, 3],  # A 3x3 matrix, as nested list
+     [4, 5, 6],  # Code can span lines if bracketed
+     [7, 8, 9]]
+print(M)
+print(M[1])  # 注意编号从0开始
+print(M[1][2])
