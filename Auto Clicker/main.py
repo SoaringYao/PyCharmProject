@@ -1,3 +1,4 @@
+import sys
 import threading
 import time
 
@@ -29,6 +30,7 @@ def on_press(key):
 
 def perform_clicks():
     global clicking
+    print('beginning clicking...')
     while clicking:
         mouse.click(default_click_button)
         time.sleep(default_click_interval)
@@ -41,7 +43,7 @@ def on_release(key):
         # 停止点击
         global clicking
         clicking = False
-        return False
+        sys.exit(0)
 
 
 # 监听键盘事件
