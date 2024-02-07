@@ -1,33 +1,49 @@
+import threading
 import time
 
-import pyautogui
-from pynput import keyboard
+from pynput.keyboard import Key, Listener
+from pynput.mouse import Button, Controller
+
+# 创建鼠标控制器
+mouse = Controller()
+
+# 默认点击时间间隔和点击的键
+default_click_interval = 0.1  # 默认点击时间间隔（秒）
+default_click_button = Button.left  # 默认点击的键
+
+# 是否继续点击的标志
+clicking = False
 
 
-class AutoClicker:
-    def __init__(self, clicks, interval):
-        self.clicks = clicks
-        self.interval = interval
-        self.running = True
-        self.listener = keyboard.Listener(OnRelease=self.on_release)
-        self.listener.start()
-
-    def on_release(self, key):
-        if key == keyboard.Key.esc:
-            self.running = False
-            return False
-
-    def start_clicking(self):
-        while 1:
-            pyautogui.click()
-            print('3...')
-            time.sleep(self.interval)
-            print('2...')
-            time.sleep(self.interval)
-            print('1...')
-            time.sleep(self.interval)
-            print('CLICK!')
+def on_press(key):
+    global clicking
+    if key == Key.ctrl_l:
+        # 开始点击
+        clicking = True
+        click_thread = threading.Thread(target=perform_clicks)
+        click_thread.start()
+    elif key == Key.esc:
+        # 结束点击
+        clicking = False
 
 
-auto_clicker = AutoClicker(1000000, 0.000001)
-auto_clicker.start_clicking()
+def perform_clicks():
+    global clicking
+    while clicking:
+        mouse.click(default_click_button)
+        time.sleep(default_click_interval)
+
+
+def on_release(key):
+    if key == Key.ctrl_l:
+        pass  # 如果你想执行一些额外的操作，可以在这里添加
+    elif key == Key.esc:
+        # 停止点击
+        global clicking
+        clicking = False
+        return False
+
+
+# 监听键盘事件
+with Listener(on_press=on_press, on_release=on_release) as listener:
+    listener.join()
