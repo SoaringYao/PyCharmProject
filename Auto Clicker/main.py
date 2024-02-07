@@ -9,7 +9,7 @@ from pynput.mouse import Button, Controller
 mouse = Controller()
 
 # 默认点击时间间隔和点击的键
-default_click_interval = 0.1  # 默认点击时间间隔（秒）
+default_click_interval = 0.0001  # 默认点击时间间隔（秒）
 default_click_button = Button.left  # 默认点击的键
 
 # 是否继续点击的标志
@@ -30,7 +30,7 @@ def on_press(key):
 
 def perform_clicks():
     global clicking
-    print('beginning clicking...')
+    print('\nbeginning clicking...')
     while clicking:
         mouse.click(default_click_button)
         time.sleep(default_click_interval)
