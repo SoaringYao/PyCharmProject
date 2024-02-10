@@ -28,7 +28,7 @@ def time_sync():
 
 
 # Training
-def train(epoch):
+def train(train_epoch):
     model.train()
     train_loss = 0
     correct = 0
@@ -57,19 +57,19 @@ def train(epoch):
         # 每训练100个batch打印一次训练集的loss和准确率
         if (batch_idx + 1) % 100 == 0:
             print(
-                f'[INFO] Epoch-{epoch + 1}-Batch-{batch_idx + 1}: Train: Loss-{loss.item():.4f}, Accuracy-{train_acc:.4f}')
+                f'[INFO] Epoch-{train_epoch + 1}-Batch-{batch_idx + 1}: Train: Loss-{loss.item():.4f}, '
+                f'Accuracy-{train_acc:.4f}')
     # 计算每个epoch内训练集的acc
     total_train_acc.append(train_acc)
 
 
 # Testing
-def test(epoch, ckpt):
+def test(test_epoch, ckpt):
     global best_acc
     model.eval()
     test_loss = 0
     correct = 0
     total = 0
-    test_acc = 0
     with torch.no_grad():
         for batch_idx, (inputs, targets) in enumerate(testloader):
             inputs, targets = inputs.to(device), targets.to(device)
@@ -82,7 +82,7 @@ def test(epoch, ckpt):
             correct += predicted.eq(targets).sum().item()
 
         test_acc = correct / total
-        print('[INFO] Epoch-{}-Test Accurancy: {:.3f}'.format(epoch + 1, test_acc), '\n')
+        print('[INFO] Epoch-{}-Test Accurancy: {:.3f}'.format(test_epoch + 1, test_acc), '\n')
 
     total_test_acc.append(test_acc)
 
@@ -90,7 +90,7 @@ def test(epoch, ckpt):
     acc = 100. * correct / total
     if acc > best_acc:
         print('Saving..')
-        state = {'net': model.state_dict(), 'acc': acc, 'epoch': epoch, }
+        state = {'net': model.state_dict(), 'acc': acc, 'epoch': test_epoch, }
         if not os.path.isdir('checkpoint'):
             os.mkdir('checkpoint')
         torch.save(state, ckpt)
