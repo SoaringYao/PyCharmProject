@@ -54,13 +54,13 @@ def train(train_epoch):
 
         # 计算准确率
         train_acc = correct / total
-        # 每训练100个batch打印一次训练集的loss和准确率
+        # 每训练100个batch打印一次训练集的损失率和准确率
         if (batch_idx + 1) % 100 == 0:
             print(
                 f'[INFO] Epoch-{train_epoch + 1}-Batch-{batch_idx + 1}: '
                 f'Train: Loss-{loss.item():.4f}, '
                 f'Accuracy-{train_acc:.4f}')
-    # 计算每个epoch内训练集的acc
+    # 计算每个epoch内训练集的accuracy
     total_train_acc.append(train_acc)
 
 

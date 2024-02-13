@@ -142,7 +142,7 @@ def cspdarknet53(pretrained=False, **kwargs):
     """Constructs a CSPDarknet53 model.
 
     Args:
-        pretrained (bool): If True, returns a model pre-trained on ImageNet
+        pretrained (bool): If True, returns a model pretrained on ImageNet
     """
     model = CSPDarknet53()
     if pretrained:
