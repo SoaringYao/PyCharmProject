@@ -46,15 +46,20 @@ class DarkNet53(nn.Module):
         super(DarkNet53, self).__init__()
         # stride = 2
         self.layer_1 = nn.Sequential(ConvBNLeakyReLU(3, 32, 3, padding=1),
-                                     ConvBNLeakyReLU(32, 64, 3, padding=1, stride=2), ResBlock(64, nblocks=1))
+                                     ConvBNLeakyReLU(32, 64, 3, padding=1, stride=2),
+                                     ResBlock(64, nblocks=1))
         # stride = 4
-        self.layer_2 = nn.Sequential(ConvBNLeakyReLU(64, 128, 3, padding=1, stride=2), ResBlock(128, nblocks=2))
+        self.layer_2 = nn.Sequential(ConvBNLeakyReLU(64, 128, 3, padding=1, stride=2),
+                                     ResBlock(128, nblocks=2))
         # stride = 8
-        self.layer_3 = nn.Sequential(ConvBNLeakyReLU(128, 256, 3, padding=1, stride=2), ResBlock(256, nblocks=8))
+        self.layer_3 = nn.Sequential(ConvBNLeakyReLU(128, 256, 3, padding=1, stride=2),
+                                     ResBlock(256, nblocks=8))
         # stride = 16
-        self.layer_4 = nn.Sequential(ConvBNLeakyReLU(256, 512, 3, padding=1, stride=2), ResBlock(512, nblocks=8))
+        self.layer_4 = nn.Sequential(ConvBNLeakyReLU(256, 512, 3, padding=1, stride=2),
+                                     ResBlock(512, nblocks=8))
         # stride = 32
-        self.layer_5 = nn.Sequential(ConvBNLeakyReLU(512, 1024, 3, padding=1, stride=2), ResBlock(1024, nblocks=4))
+        self.layer_5 = nn.Sequential(ConvBNLeakyReLU(512, 1024, 3, padding=1, stride=2),
+                                     ResBlock(1024, nblocks=4))
 
         # 最后两层后处理
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
