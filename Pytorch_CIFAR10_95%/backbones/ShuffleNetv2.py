@@ -14,7 +14,7 @@ class ShuffleBlock(nn.Module):
         self.groups = groups
 
     def forward(self, x):
-        '''Channel shuffle: [N,C,H,W] -> [N,g,C/g,H,W] -> [N,C/g,g,H,W] -> [N,C,H,W]'''
+        """Channel shuffle: [N,C,H,W] -> [N,g,C/g,H,W] -> [N,C/g,g,H,W] -> [N,C,H,W]"""
         N, C, H, W = x.size()
         g = self.groups
         return x.view(N, g, C // g, H, W).permute(0, 2, 1, 3, 4).reshape(N, C, H, W)

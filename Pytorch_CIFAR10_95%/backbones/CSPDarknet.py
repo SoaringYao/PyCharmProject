@@ -97,6 +97,8 @@ class CSPDarknet53(nn.Module):
         c3 = self.layer_3(c2)
         c4 = self.layer_4(c3)
         c5 = self.layer_5(c4)
+
+        # 在YOLOv3中返回后三层feature map
         # return c3, c4, c5
 
         # 为了适配cifar10，加上全局均值池化核全连接层

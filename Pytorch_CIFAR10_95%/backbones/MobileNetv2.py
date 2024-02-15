@@ -21,7 +21,7 @@ class Block(nn.Module):
             in_planes, planes, kernel_size=1, stride=1, padding=0, bias=False)
         self.bn1 = nn.BatchNorm2d(planes)
 
-        # DW Conv：深度卷积，将卷积核拆分成为单通道形式，在不改变输入特征图像深度的情况下，对每一通道进行卷积操作
+        # DW Conv：深度卷积，将卷积核拆分成为单通道形式，在不改变输入特征图像深度的情况下，对每通道进行卷积操作
         # 因此，groups=planes
         self.conv2 = nn.Conv2d(planes, planes, kernel_size=3,
                                stride=stride, padding=1, groups=planes, bias=False)
