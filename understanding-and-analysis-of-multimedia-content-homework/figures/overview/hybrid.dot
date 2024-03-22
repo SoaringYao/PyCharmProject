@@ -1,0 +1,18 @@
+digraph G{
+  node[shape=box];
+  {"text data"[shape=none]} -> bert -> {"text feature"[shape=none]}
+  -> "text model" -> {"text prediction"[shape=none]};
+  {"visual data"[shape=none]} -> "visual lstm" -> {"visual feature"[shape=none]}
+  -> "visual model" -> {"visual prediction"[shape=none]};
+  {"acoustic data"[shape=none]} -> "acoustic lstm" -> {"acoustic feature"[shape=none]}
+  -> "acoustic model" -> {"acoustic prediction"[shape=none]};
+  {"multimodal feature"[shape=none]} -> "multimodal model" -> {"multimodal prediction"[shape=none]}
+  {
+    rank=same;
+    bert -> "visual lstm" -> "acoustic lstm" -> "cat"[style=invis];
+  }
+  {"text feature", "visual feature", "acoustic feature"} -> "cat" -> "multimodal feature"[constraint=false];
+  {"text prediction", "visual prediction", "acoustic prediction", "multimodal prediction"}
+  -> "average or vote or NN" -> {label[shape=none]};
+}
+

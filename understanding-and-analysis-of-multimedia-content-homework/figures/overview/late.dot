@@ -1,0 +1,12 @@
+digraph G{
+  node[shape=box];
+  {"text data"[shape=none]} -> bert -> {"text feature"[shape=none]}
+  -> "text model" -> {"text prediction"[shape=none]};
+  {"visual data"[shape=none]} -> "visual lstm" -> {"visual feature"[shape=none]}
+  -> "visual model" -> {"visual prediction"[shape=none]};
+  {"acoustic data"[shape=none]} -> "acoustic lstm" -> {"acoustic feature"[shape=none]}
+  -> "acoustic model" -> {"acoustic prediction"[shape=none]};
+  {"text prediction", "visual prediction", "acoustic prediction"} -> "average or vote or NN"
+  -> {label[shape=none]};
+}
+

@@ -1,0 +1,6 @@
+digraph G{
+  node[shape=box];
+  {"RGB data"[shape=none]} -> "cat or +";
+  {"infrared data"[shape=none]} -> "cat or +";
+  "cat or +" -> model -> {label[shape=none]};
+}

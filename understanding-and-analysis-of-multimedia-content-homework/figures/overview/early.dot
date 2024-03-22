@@ -1,0 +1,7 @@
+digraph G{
+  node[shape=box];
+  {"text data"[shape=none]} -> bert -> {"text feature"[shape=none]} -> cat;
+  {"visual data"[shape=none]} -> "visual lstm" -> {"visual feature"[shape=none]} -> cat;
+  {"acoustic data"[shape=none]} -> "acoustic lstm" -> {"acoustic feature"[shape=none]} -> cat;
+  cat -> "fusion model" -> {label[shape=none]};
+}

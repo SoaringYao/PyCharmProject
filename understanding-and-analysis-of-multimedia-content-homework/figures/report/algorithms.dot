@@ -1,0 +1,9 @@
+digraph G{
+  node[shape=box, style=filled];
+  视频插帧算法[color=gold];
+  node[color=forestgreen];
+  视频插帧算法 -> {CNN法, 相位法, 光流法, GAN法, 多因素混合法};
+  node[color=lightblue];
+  CNN法 -> {一般CNN法, 核函数法};
+  光流法 -> {路径选择性插值, 光流估计法, 运动补偿法};
+}
