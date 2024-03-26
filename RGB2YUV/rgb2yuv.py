@@ -238,6 +238,44 @@ def rgb2yuv(inp: "Tensor") -> "Tensor":
     return out
 
 
+def read_bmp(filename):
+    bmp_header_size = 54
+
+    import numpy as np
+
+    # 读取BMP文件内容
+    with open(filename, 'rb') as fr:
+        # 读取BMP文件头
+        bmp_header = fr.read(bmp_header_size)
+
+        # 获取图像宽度和高度
+        width = bmp_header[18] + (bmp_header[19] << 8) + (bmp_header[20] << 16) + (bmp_header[21] << 24)
+        height = bmp_header[22] + (bmp_header[23] << 8) + (bmp_header[24] << 16) + (bmp_header[25] << 24)
+
+        # 计算每行像素占用的字节数，每个像素占用3个字节（RGB）
+        row_bytes = width * 3
+
+        # 计算BMP文件中每行像素数据在文件中的实际长度，需要考虑字节对齐
+        padding = 0
+        if row_bytes % 4 != 0:
+            padding = 4 - (row_bytes % 4)
+
+        # 读取像素数据
+        pixel_data = np.zeros((height, width, 3), dtype=np.uint8)
+        for i in range(height - 1, -1, -1):
+            for j in range(width):
+                # 读取像素的B、G、R三个分量
+                b = ord(fr.read(1))
+                g = ord(fr.read(1))
+                r = ord(fr.read(1))
+                pixel_data[i, j] = [r, g, b]  # 存储顺序为RGB
+                fr.read(1)
+            # 跳过每行后面的填充字节
+            fr.read(padding)
+
+    return pixel_data
+
+
 # main function
 if __name__ == "__main__" and __doc__:
     from docopt import docopt
@@ -246,9 +284,19 @@ if __name__ == "__main__" and __doc__:
     if args["--debug"]:
         print(args)
 
+    rgb = torch.from_numpy(read_bmp(args["<inp>"]).copy()) + 0.0
+
+    # Not used in real programs, only to verify that the rgb read is correct
+    # {{ verifying
     from matplotlib.image import imread
 
-    rgb = torch.from_numpy(imread(args["<inp>"]).copy()) + 0.0
+    rgb_verify = torch.from_numpy(imread(args["<inp>"]).copy()) + 0.0
+    if (rgb == rgb_verify).all():
+        print('\nrgb parses correctly\n')
+    else:
+        exit(-1)
+    # }} verifying end
+
     if args["--verbose"]:
         image_size = "*".join(list(map(str, rgb.shape[0:2][::-1])))
         print(f"width*height is {image_size}.")
