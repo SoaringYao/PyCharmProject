@@ -243,35 +243,27 @@ def read_bmp(filename):
 
     import numpy as np
 
-    # 读取BMP文件内容
+    # read bmp files
     with open(filename, 'rb') as fr:
-        # 读取BMP文件头
+        # read the bmp file header
         bmp_header = fr.read(bmp_header_size)
 
-        # 获取图像宽度和高度
+        # get the image width and height
         width = bmp_header[18] + (bmp_header[19] << 8) + (bmp_header[20] << 16) + (bmp_header[21] << 24)
         height = bmp_header[22] + (bmp_header[23] << 8) + (bmp_header[24] << 16) + (bmp_header[25] << 24)
-
-        # 计算每行像素占用的字节数，每个像素占用3个字节（RGB）
-        row_bytes = width * 3
-
-        # 计算BMP文件中每行像素数据在文件中的实际长度，需要考虑字节对齐
-        padding = 0
-        if row_bytes % 4 != 0:
-            padding = 4 - (row_bytes % 4)
 
         # 读取像素数据
         pixel_data = np.zeros((height, width, 3), dtype=np.uint8)
         for i in range(height - 1, -1, -1):
             for j in range(width):
-                # 读取像素的B、G、R三个分量
+                # the b g and r components of the pixel are read
                 b = ord(fr.read(1))
                 g = ord(fr.read(1))
                 r = ord(fr.read(1))
-                pixel_data[i, j] = [r, g, b]  # 存储顺序为RGB
+                # the storage order is rgb
+                pixel_data[i, j] = [r, g, b]
+                # skip the placeholder bytes
                 fr.read(1)
-            # 跳过每行后面的填充字节
-            fr.read(padding)
 
     return pixel_data
 
