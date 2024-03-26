@@ -6,7 +6,7 @@ options:
     -h, --help
     -d, --debug
     -v, --verbose           print information about image.
-    -f, --format <fmt>      Format of yuv. [default: i444]
+    -f, --format <fmt>      Format of yuv. [default: i420]
 
 formats:
     444:
@@ -35,59 +35,78 @@ if TYPE_CHECKING:
     from torch import Tensor
 
 
+# main class
 class YUV4:
 
-    def __init__(self, yuv: "Tensor"):
-        self.y, self.u, self.v = yuv.permute(2, 0, 1)
+    def __init__(self, inp: "Tensor"):
+        # Dimension transformation, which separates y,u,v into three two-dimensional matrices
+        self.y, self.u, self.v = inp.permute(2, 0, 1)
+        # expand the matrix from dimension 0
         self.y = self.y.flatten()
 
     def uuvv(self) -> "Tensor":
-        out = torch.cat([self.y, self.u, self.v])
-        return out
+        # concatenate tensors row by row
+        uuvv = torch.cat([self.y, self.u, self.v])
+        return uuvv
 
     def vvuu(self) -> "Tensor":
-        out = torch.cat([self.y, self.v, self.u])
-        return out
+        vvuu = torch.cat([self.y, self.v, self.u])
+        return vvuu
 
     def uvuv(self) -> "Tensor":
+        # y is stored separately and u v is stored alternately by two tensor concatenations
         uv = torch.stack([self.u, self.v], dim=1).flatten()
-        out = torch.cat([self.y, uv])
-        return out
+        # stack the u,v tensors in rows
+        uvuv = torch.cat([self.y, uv])
+        # concatenate tensors row by row
+        return uvuv
 
     def vuvu(self) -> "Tensor":
         uv = torch.stack([self.v, self.u], dim=1).flatten()
-        out = torch.cat([self.y, uv])
-        return out
+        vuvu = torch.cat([self.y, uv])
+        return vuvu
 
 
+# According to whether the common Y component is divided into three categories :YUV 444,YUV 422,YUV 420
 class YUV444(YUV4):
 
-    def __init__(self, yuv: "Tensor"):
-        super().__init__(yuv)
+    def __init__(self, yuv4: "Tensor"):
+        # Inheriting from a parent class
+        super().__init__(yuv4)
+        # According to YUV444, expand u v from dimension 0 as well
         self.u = self.u.flatten()
         self.v = self.v.flatten()
 
 
 class YUV422(YUV4):
+    # According to YUV 422,Y shares 2 sets of uv components
 
-    def __init__(self, yuv: "Tensor"):
-        super().__init__(yuv)
+    def __init__(self, yuv4: "Tensor"):
+        super().__init__(yuv4)
+        # down sampling while expanding the color components
         self.u = self.u[0::2, :].flatten()
+        # A two-dimensional array is sliced with a step of 2 for rows and 1 for columns
         self.v = self.v[0::2, :].flatten()
 
 
 class YUV420(YUV4):
+    # According to YUV 422,Y shares 4 sets of uv components
 
-    def __init__(self, yuv: "Tensor"):
-        super().__init__(yuv)
+    def __init__(self, yuv4: "Tensor"):
+        super().__init__(yuv4)
+        # down sampling while expanding the color components
         self.u = self.u[0::2, 0::2].flatten()
+        # A two-dimensional array is sliced with a step of two for both rows and columns
         self.v = self.v[0::2, 0::2].flatten()
 
 
+# Twelve YUV formats are implemented according to three broad categories
+
+# YUV444:i444,yv24,nv24,nv42
 class I444(YUV444):
 
-    def __init__(self, yuv: "Tensor"):
-        super().__init__(yuv)
+    def __init__(self, yuv444: "Tensor"):
+        super().__init__(yuv444)
 
     def __call__(self) -> "Tensor":
         return self.uuvv()
@@ -95,8 +114,8 @@ class I444(YUV444):
 
 class YV24(YUV444):
 
-    def __init__(self, yuv: "Tensor"):
-        super().__init__(yuv)
+    def __init__(self, yuv444: "Tensor"):
+        super().__init__(yuv444)
 
     def __call__(self) -> "Tensor":
         return self.vvuu()
@@ -104,8 +123,8 @@ class YV24(YUV444):
 
 class NV24(YUV444):
 
-    def __init__(self, yuv: "Tensor"):
-        super().__init__(yuv)
+    def __init__(self, yuv444: "Tensor"):
+        super().__init__(yuv444)
 
     def __call__(self) -> "Tensor":
         return self.uvuv()
@@ -113,17 +132,18 @@ class NV24(YUV444):
 
 class NV42(YUV444):
 
-    def __init__(self, yuv: "Tensor"):
-        super().__init__(yuv)
+    def __init__(self, yuv444: "Tensor"):
+        super().__init__(yuv444)
 
     def __call__(self) -> "Tensor":
         return self.vuvu()
 
 
+# YUV422:i422,yv16,nv16,nv61
 class I422(YUV422):
 
-    def __init__(self, yuv: "Tensor"):
-        super().__init__(yuv)
+    def __init__(self, yuv422: "Tensor"):
+        super().__init__(yuv422)
 
     def __call__(self) -> "Tensor":
         return self.uuvv()
@@ -131,8 +151,8 @@ class I422(YUV422):
 
 class YV16(YUV422):
 
-    def __init__(self, yuv: "Tensor"):
-        super().__init__(yuv)
+    def __init__(self, yuv422: "Tensor"):
+        super().__init__(yuv422)
 
     def __call__(self) -> "Tensor":
         return self.vvuu()
@@ -140,8 +160,8 @@ class YV16(YUV422):
 
 class NV16(YUV422):
 
-    def __init__(self, yuv: "Tensor"):
-        super().__init__(yuv)
+    def __init__(self, yuv422: "Tensor"):
+        super().__init__(yuv422)
 
     def __call__(self) -> "Tensor":
         return self.uvuv()
@@ -149,17 +169,18 @@ class NV16(YUV422):
 
 class NV61(YUV422):
 
-    def __init__(self, yuv: "Tensor"):
-        super().__init__(yuv)
+    def __init__(self, yuv422: "Tensor"):
+        super().__init__(yuv422)
 
     def __call__(self) -> "Tensor":
         return self.vuvu()
 
 
+# YUV420:i420,yv12,nv12,nv21
 class I420(YUV420):
 
-    def __init__(self, yuv: "Tensor"):
-        super().__init__(yuv)
+    def __init__(self, yuv420: "Tensor"):
+        super().__init__(yuv420)
 
     def __call__(self) -> "Tensor":
         return self.uuvv()
@@ -167,16 +188,16 @@ class I420(YUV420):
 
 class YV12(YUV420):
 
-    def __init__(self, yuv: "Tensor"):
-        super().__init__(yuv)
+    def __init__(self, yuv420: "Tensor"):
+        super().__init__(yuv420)
 
     def __call__(self) -> "Tensor":
         return self.vvuu()
 
 
 class NV12(YUV420):
-    def __init__(self, yuv: "Tensor"):
-        super().__init__(yuv)
+    def __init__(self, yuv420: "Tensor"):
+        super().__init__(yuv420)
 
     def __call__(self) -> "Tensor":
         return self.uvuv()
@@ -184,13 +205,14 @@ class NV12(YUV420):
 
 class NV21(YUV420):
 
-    def __init__(self, yuv: "Tensor"):
-        super().__init__(yuv)
+    def __init__(self, yuv420: "Tensor"):
+        super().__init__(yuv420)
 
     def __call__(self) -> "Tensor":
         return self.vuvu()
 
 
+# Dictionary definition
 YUV_DICT = {
     "i444": I444,
     "yv24": YV24,
@@ -207,14 +229,16 @@ YUV_DICT = {
 }
 
 
-def rgb2yuv(rgb: "Tensor") -> "Tensor":
+# The color space is converted from RGB to YUV
+def rgb2yuv(inp: "Tensor") -> "Tensor":
     bt = torch.tensor([[0.299, 0.587, 0.114],
                        [-0.148, -0.289, 0.437],
                        [0.615, -0.515, -0.100], ])
-    yuv = rgb @ bt.transpose(1, 0) + torch.tensor([0, 128, 128])
-    return yuv
+    out = inp @ bt.transpose(1, 0) + torch.tensor([0, 128, 128])
+    return out
 
 
+# main function
 if __name__ == "__main__" and __doc__:
     from docopt import docopt
 
@@ -226,13 +250,13 @@ if __name__ == "__main__" and __doc__:
 
     rgb = torch.from_numpy(imread(args["<inp>"]).copy()) + 0.0
     if args["--verbose"]:
-        image_size = "x".join(list(map(str, rgb.shape[0:2][::-1])))
+        image_size = "*".join(list(map(str, rgb.shape[0:2][::-1])))
         print(f"width*height is {image_size}.")
     yuv = rgb2yuv(rgb)
     yuv = yuv.int().maximum(torch.tensor(0)).minimum(torch.tensor(255))
     if args["--debug"]:
         print(yuv[:, :, 1])
         print(yuv[:, :, 2])
-    out = YUV_DICT[args["--format"]](yuv)()
+    yuv_file = YUV_DICT[args["--format"]](yuv)()
     with open(args["<out>"], mode="wb") as f:
-        f.write(bytes(out.tolist()))
+        f.write(bytes(yuv_file.tolist()))
