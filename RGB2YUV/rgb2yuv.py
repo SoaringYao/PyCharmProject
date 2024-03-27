@@ -252,7 +252,7 @@ def read_bmp(filename):
         width = bmp_header[18] + (bmp_header[19] << 8) + (bmp_header[20] << 16) + (bmp_header[21] << 24)
         height = bmp_header[22] + (bmp_header[23] << 8) + (bmp_header[24] << 16) + (bmp_header[25] << 24)
 
-        # 读取像素数据
+        # reading pixel data
         pixel_data = np.zeros((height, width, 3), dtype=np.uint8)
         for i in range(height - 1, -1, -1):
             for j in range(width):
