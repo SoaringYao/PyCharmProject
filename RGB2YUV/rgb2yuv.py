@@ -4,7 +4,7 @@ usage: rgb2yuv.py [-hdv] [-f <fmt>] <inp> <out>
 
 options:
     -h, --help
-    -d, --debug
+    -d, --debug             print yuv tensor information.
     -v, --verbose           print information about image.
     -f, --format <fmt>      Format of yuv. [default: i420]
 
