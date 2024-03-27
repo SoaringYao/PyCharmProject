@@ -55,3 +55,8 @@ fabric.properties
 # Proj
 cifar10/
 /Pytorch_CIFAR10_95%/checkpoint/ResNet18-CIFAR10.pth
+RGB2YUV/Writerside/c.list
+*.tree
+*.list
+*.list
+*.cfg

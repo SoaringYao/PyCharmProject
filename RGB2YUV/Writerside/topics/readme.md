@@ -52,6 +52,9 @@ formats:
 
 - 程序默认生成的 yuv 的格式为i420，可以通过-f参数修改为其他格式，代码通过docopt包定义接口描述，具体参数和使用方法已在help部分给出。
 
+- .run文件夹中有设置好的pycharm运行配置，rgb2yuv_default以参数-d -v tests/rgb.bmp tests/yuv.yuv运行
+  输入输出文件路径为tests/rgb.bmp和tests/yuv.yuv。
+
 ## 部分关键代码和注释
 
 ```python
@@ -165,6 +168,11 @@ class I420(YUV420):
 
 对于其他的格式，使用了torch.cat()和torch.stack()方法，用不同方式拼接存储U、V分量的矩阵，
 并利用torch.flatten()方法将拼接后的矩阵展开，实现了uv信息的拼接与存储。
+
+## 结果展示
+
+下图为输出的yuv.yuv文件通过YUView查看得到的画面
+![image](result.png)
 
 ## 总结
 
