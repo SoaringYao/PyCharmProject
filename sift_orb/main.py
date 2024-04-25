@@ -286,7 +286,9 @@ def compute_keypoints_with_orientations(keypoint, octave_index, gaussian_image, 
             for j in range(-radius, radius + 1):
                 region_x = int(round(keypoint.pt[0] / float32(2 ** octave_index))) + j
                 if 0 < region_x < image_shape[1] - 1:
-                    dx, dy, gradient_magnitude = get_dx_dy_gradient_magnitude(gaussian_image, region_x, region_y)
+                    dx = gaussian_image[region_y, region_x + 1] - gaussian_image[region_y, region_x - 1]
+                    dy = gaussian_image[region_y - 1, region_x] - gaussian_image[region_y + 1, region_x]
+                    gradient_magnitude = sqrt(dx * dx + dy * dy)
                     gradient_orientation = rad2deg(arctan2(dy, dx))
                     weight = exp(weight_factor * (i ** 2 + j ** 2))
                     # constant in front of exponential can be dropped because we will find peaks later
@@ -316,13 +318,6 @@ def compute_keypoints_with_orientations(keypoint, octave_index, gaussian_image, 
             new_keypoint = KeyPoint(*keypoint.pt, keypoint.size, orientation, keypoint.response, keypoint.octave)
             keypoints_with_orientations.append(new_keypoint)
     return keypoints_with_orientations
-
-
-def get_dx_dy_gradient_magnitude(gaussian_image, x, y):
-    dx = gaussian_image[y, x + 1] - gaussian_image[y, x - 1]
-    dy = gaussian_image[y - 1, x] - gaussian_image[y + 1, x]
-    gradient_magnitude = sqrt(dx * dx + dy * dy)
-    return dx, dy, gradient_magnitude
 
 
 def compare_keypoints(keypoint1, keypoint2):
@@ -425,9 +420,9 @@ def generate_descriptors(keypoints, gaussian_images, window_width=4, num_bins=8,
                     window_row = int(round(point[1] + row))
                     window_col = int(round(point[0] + col))
                     if 0 < window_row < num_rows - 1 and 0 < window_col < num_cols - 1:
-                        dx, dy, gradient_magnitude = get_dx_dy_gradient_magnitude(gaussian_image,
-                                                                                  window_col,
-                                                                                  window_row)
+                        dx = gaussian_image[window_row, window_col + 1] - gaussian_image[window_row, window_col - 1]
+                        dy = gaussian_image[window_row - 1, window_col] - gaussian_image[window_row + 1, window_col]
+                        gradient_magnitude = sqrt(dx * dx + dy * dy)
                         gradient_orientation = rad2deg(arctan2(dy, dx)) % 360
                         weight = exp(weight_multiplier * ((row_rot / hist_width) ** 2 + (col_rot / hist_width) ** 2))
                         row_bin_list.append(row_bin)
