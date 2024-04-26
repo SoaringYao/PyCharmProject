@@ -9,7 +9,7 @@ options:
     -h, --help                  Show this screen.
     -V, --version               Show version.
     -r, --ratio <ratio>         Lowe's ratio. (more-tolerant:0.6; more-extreme:0.4) [default: 0.5]
-    -o, --output <output>       Output to an image file. [default: figures/output/sift.png]
+    -o, --output <output>       Output to an image file. [default: figures/output/sift_t.png]
     -n, --dry-run               Don't open the image in a window.
 """
 import logging
