@@ -8,7 +8,7 @@ usage: sift.py [-hVn] [-r <ratio>] [-o <output>] <image1> <image2>
 options:
     -h, --help                  Show this screen.
     -V, --version               Show version.
-    -r, --ratio <ratio>         Lowe's ratio. [default: 0.5]
+    -r, --ratio <ratio>         Lowe's ratio. (more-tolerant:0.6; more-extreme:0.4) [default: 0.5]
     -o, --output <output>       Output to an image file. [default: figures/output/sift.png]
     -n, --dry-run               Don't open the image in a window.
 """
