@@ -27,19 +27,17 @@ print(logger)
 print(type(logger))
 
 # 处理器
-# 1.标准输出
+# 标准输出
 sh = logging.StreamHandler()
-
-# 2.文件输出
+# 文件输出
 # 没有设置输出级别，将用logger的输出级别(并且输出级别在设置的时候级别不能比Logger的低!!!)，设置了就使用自己的输出级别
 fh = logging.FileHandler(filename="fh.log", mode='w')
 
 # 格式器
-fmt1 = logging.Formatter(fmt="%(asctime)s - %(levelname)-9s - %(filename)-8s : %(lineno)-3s line - %(message)s"
-                         , datefmt="%Y-%m-%d %H:%M:%S")
-
-fmt2 = logging.Formatter(fmt="%(asctime)s - %(name)s - %(levelname)-9s - %(filename)-8s : %(lineno)s line - %(message)s"
-                         , datefmt="%Y-%m-%d %H:%M:%S")
+fmt1 = logging.Formatter(fmt="%(asctime)s - %(levelname)-9s - %(filename)-8s : %(lineno)-3s line - %(message)s",
+                         datefmt="%Y-%m-%d %H:%M:%S")
+fmt2 = logging.Formatter(fmt="%(asctime)s - %(name)s - %(levelname)-9s - %(filename)-8s :"
+                             " %(lineno)-3s line - %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
 
 # 给处理器设置格式
 sh.setFormatter(fmt1)
@@ -428,14 +426,15 @@ def generate_descriptors(keypoints, gaussian_images, window_width=4, num_bins=8,
         col_bin_list = []
         magnitude_list = []
         orientation_bin_list = []
-        histogram_tensor = zeros((window_width + 2, window_width + 2,
-                                  num_bins))  # first two dimensions are increased by 2 to account for border effects
+        histogram_tensor = zeros((window_width + 2, window_width + 2, num_bins))
+        # first two dimensions are increased by 2 to account for border effects
 
         # Descriptor window size (described by half_width) follows OpenCV convention
         hist_width = scale_multiplier * 0.5 * scale * keypoint.size
-        half_width = int(
-            round(hist_width * sqrt(2) * (window_width + 1) * 0.5))  # sqrt(2) corresponds to diagonal length of a pixel
-        half_width = int(min(half_width, sqrt(num_rows ** 2 + num_cols ** 2)))  # ensure half_width lies within image
+        half_width = int(round(hist_width * sqrt(2) * (window_width + 1) * 0.5))
+        # sqrt(2) corresponds to diagonal length of a pixel
+        half_width = int(min(half_width, sqrt(num_rows ** 2 + num_cols ** 2)))
+        # ensure half_width lies within image
 
         for row in range(-half_width, half_width + 1):
             for col in range(-half_width, half_width + 1):

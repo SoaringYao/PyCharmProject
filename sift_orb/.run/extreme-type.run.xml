@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="sift_orb" type="PythonConfigurationType" factoryName="Python">
+  <configuration default="false" name="extreme-type" type="PythonConfigurationType" factoryName="Python">
     <module name="sift_orb" />
     <option name="ENV_FILES" value="" />
     <option name="INTERPRETER_OPTIONS" value="" />
