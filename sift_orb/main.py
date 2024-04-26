@@ -523,8 +523,8 @@ if __name__ == "__main__" and __doc__:
     h1, w1 = img1.shape
     h2, w2 = img2.shape
     new_image = np.zeros((max(h1, h2), w1 + w2, 3), np.float32)
-    new_image[:h1, :w1, :] = plt.imread(args["<image1>"]).astype('uint8')[:, :, :3]
-    new_image[:h2, w1:w1 + w2, :] = plt.imread(args["<image2>"]).astype('uint8')[:, :, :3]
+    new_image[:h1, :w1, :] = plt.imread(args["<image1>"])[:, :, :3]
+    new_image[:h2, w1:w1 + w2, :] = plt.imread(args["<image2>"])[:, :, :3]
     fig, ax = plt.subplots()
     ax.set(xticks=[], yticks=[])
     for m, _ in good:
@@ -534,7 +534,7 @@ if __name__ == "__main__" and __doc__:
     ax.imshow(new_image)
     end_time = time.time()
     t3 = end_time - start_time
-    print('all done, time used:', t3)
+    print('all done, time used:', t0 + t1 + t2 + t3)
     if args["--output"]:
         plt.savefig(args["--output"])
     if not args["--dry-run"]:
