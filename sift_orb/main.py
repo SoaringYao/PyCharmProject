@@ -20,7 +20,34 @@ from numpy import (all, array, arctan2, cos, sin, exp, dot, log, logical_and, ro
                    rad2deg, where, zeros, floor, round, float32)
 from numpy.linalg import det, lstsq, norm
 
+# 记录器
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+print(logger)
+print(type(logger))
+
+# 处理器
+# 1.标准输出
+sh = logging.StreamHandler()
+
+# 2.文件输出
+# 没有设置输出级别，将用logger的输出级别(并且输出级别在设置的时候级别不能比Logger的低!!!)，设置了就使用自己的输出级别
+fh = logging.FileHandler(filename="fh.log", mode='w')
+
+# 格式器
+fmt1 = logging.Formatter(fmt="%(asctime)s - %(levelname)-9s - %(filename)-8s : %(lineno)-3s line - %(message)s"
+                         , datefmt="%Y-%m-%d %H:%M:%S")
+
+fmt2 = logging.Formatter(fmt="%(asctime)s - %(name)s - %(levelname)-9s - %(filename)-8s : %(lineno)s line - %(message)s"
+                         , datefmt="%Y-%m-%d %H:%M:%S")
+
+# 给处理器设置格式
+sh.setFormatter(fmt1)
+fh.setFormatter(fmt2)
+
+# 记录器设置处理器
+logger.addHandler(sh)
+logger.addHandler(fh)
 float_tolerance = 1e-7
 
 
@@ -44,7 +71,7 @@ def compute_keypoints_and_descriptors(image, sigma=1.6, num_intervals=3, assumed
 def generate_base_image(image, sigma, assumed_blur):
     """Generate base image from input image by upSampling by 2 in both directions and blurring
     """
-    logger.debug('Generating base image...')
+    logger.info('Generating base image...')
     image = resize(image, (0, 0), fx=2, fy=2, interpolation=INTER_LINEAR)
     sigma_diff = sqrt(max((sigma ** 2) - ((2 * assumed_blur) ** 2), 0.01))
     return GaussianBlur(image, (0, 0), sigmaX=sigma_diff,
@@ -61,7 +88,7 @@ def generate_gaussian_kernels(sigma, num_intervals):
     """Generate list of gaussian kernels at which to blur the input image.
        Default values of sigma, intervals, and octaves follow section 3 of Lowe's paper.
     """
-    logger.debug('Generating scales...')
+    logger.info('Generating scales...')
     num_images_per_octave = num_intervals + 3
     k = 2 ** (1. / num_intervals)
     gaussian_kernels = zeros(
@@ -79,7 +106,7 @@ def generate_gaussian_kernels(sigma, num_intervals):
 def generate_gaussian_images(image, num_octaves, gaussian_kernels):
     """Generate scale-space pyramid of Gaussian images
     """
-    logger.debug('Generating Gaussian images...')
+    logger.info('Generating Gaussian images...')
     gaussian_images = []
 
     for octave_index in range(num_octaves):
@@ -97,7 +124,7 @@ def generate_gaussian_images(image, num_octaves, gaussian_kernels):
 def generate_do_g_images(gaussian_images):
     """Generate Difference-of-Gaussian's image pyramid
     """
-    logger.debug('Generating Difference-of-Gaussian images...')
+    logger.info('Generating Difference-of-Gaussian images...')
     dog_images = []
 
     for gaussian_images_in_octave in gaussian_images:
@@ -114,7 +141,7 @@ def find_scale_space_extrema(gaussian_images, dog_images, num_intervals, sigma, 
                              contrast_threshold=0.04):
     """Find pixel positions of all scale-space extrema in the image pyramid
     """
-    logger.debug('Finding scale-space extrema...')
+    logger.info('Finding scale-space extrema...')
     threshold = floor(0.5 * contrast_threshold / num_intervals * 255)  # from OpenCV implementation
     keypoints = []
 
@@ -384,7 +411,7 @@ def generate_descriptors(keypoints, gaussian_images, window_width=4, num_bins=8,
                          descriptor_max_value=0.2):
     """Generate descriptors for each keypoint
     """
-    logger.debug('Generating descriptors...')
+    logger.info('Generating descriptors...')
     descriptors = []
 
     for keypoint in keypoints:
@@ -494,27 +521,26 @@ if __name__ == "__main__" and __doc__:
     import cv2
     from matplotlib import pyplot as plt
 
-    print('image initializing...')
+    logger.info('sift beginning...')
     img1 = cv2.imread(args["<image1>"], 0)
     img2 = cv2.imread(args["<image2>"], 0)
-    print('done')
-    print('sift beginning...')
     start_time = time.time()
     kp1, des1 = compute_keypoints_and_descriptors(img1)
     end_time = time.time()
     t0 = end_time - start_time
-    print('kp1 done, time used:', t0)
+    logger.info(f'img1 done, time used:{t0:.3f}s')
     start_time = time.time()
     kp2, des2 = compute_keypoints_and_descriptors(img2)
     end_time = time.time()
     t1 = end_time - start_time
-    print('kp2 done, time used:', t1)
+    logger.info(f'img2 done, time used:{t1:.3f}s')
+    logger.info('orb beginning...')
     start_time = time.time()
     flann = cv2.FlannBasedMatcher(dict(algorithm=0, trees=5), dict(checks=50))
     matches = flann.knnMatch(des1, des2, k=2)
     end_time = time.time()
     t2 = end_time - start_time
-    print('flann match done, time used:', t2)
+    logger.info(f'match done, time used:{t2:.3f}s')
     start_time = time.time()
     good = list(filter(
         lambda match:
@@ -534,7 +560,7 @@ if __name__ == "__main__" and __doc__:
     ax.imshow(new_image)
     end_time = time.time()
     t3 = end_time - start_time
-    print('all done, time used:', t0 + t1 + t2 + t3)
+    logger.info(f'all done, time used:{t0 + t1 + t2 + t3:.3f}s')
     if args["--output"]:
         plt.savefig(args["--output"])
     if not args["--dry-run"]:
