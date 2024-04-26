@@ -1,5 +1,5 @@
 #! /usr/bin/env python3
-"""SIFT.
+"""SIFT
 
 Use SIFT to match two pictures.
 
@@ -9,7 +9,7 @@ options:
     -h, --help                  Show this screen.
     -V, --version               Show version.
     -r, --ratio <ratio>         Lowe's ratio. [default: 0.5]
-    -o, --output <output>       Output to an image file.
+    -o, --output <output>       Output to an image file. [default: figures/output/sift.png]
     -n, --dry-run               Don't open the image in a window.
 """
 import logging
@@ -300,8 +300,8 @@ def compute_keypoints_with_orientations(keypoint, octave_index, gaussian_image, 
                                raw_histogram[n - 2] + raw_histogram[(n + 2) % num_bins]) / 16.
     orientation_max = max(smooth_histogram)
     orientation_peaks = \
-        where(logical_and(smooth_histogram > roll(smooth_histogram, 1), smooth_histogram > roll(smooth_histogram, -1)))[
-            0]
+        where(logical_and(smooth_histogram > roll(smooth_histogram, 1),
+                          smooth_histogram > roll(smooth_histogram, -1)))[0]
     for peak_index in orientation_peaks:
         peak_value = smooth_histogram[peak_index]
         if peak_value >= peak_ratio * orientation_max:
@@ -513,7 +513,7 @@ if __name__ == "__main__" and __doc__:
     for m, _ in good:
         pt1 = (int(kp1[m.queryIdx].pt[0]), int(kp1[m.queryIdx].pt[1]))
         pt2 = (int(kp2[m.trainIdx].pt[0] + w1), int(kp2[m.trainIdx].pt[1]))
-        ax.plot(*zip(pt1, pt2), 'r-', lw=0.5)
+        ax.plot(*zip(pt1, pt2).astype('uint8'), 'r-', lw=0.5)
     ax.imshow(new_image)
     if args["--output"]:
         plt.savefig(args["--output"])
