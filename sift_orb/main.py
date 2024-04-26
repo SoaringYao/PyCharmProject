@@ -489,16 +489,33 @@ if __name__ == "__main__" and __doc__:
     Arg = Union[bool, int, str, List[str]]
     args: Dict[str, Arg] = docopt(
         __doc__, version="v0.0.1", options_first=True)
+    import time
     import numpy as np
     import cv2
     from matplotlib import pyplot as plt
 
+    print('image initializing...')
     img1 = cv2.imread(args["<image1>"], 0)
     img2 = cv2.imread(args["<image2>"], 0)
+    print('done')
+    print('sift beginning...')
+    start_time = time.time()
     kp1, des1 = compute_keypoints_and_descriptors(img1)
+    end_time = time.time()
+    t0 = end_time - start_time
+    print('kp1 done, time used:', t0)
+    start_time = time.time()
     kp2, des2 = compute_keypoints_and_descriptors(img2)
+    end_time = time.time()
+    t1 = end_time - start_time
+    print('kp2 done, time used:', t1)
+    start_time = time.time()
     flann = cv2.FlannBasedMatcher(dict(algorithm=0, trees=5), dict(checks=50))
     matches = flann.knnMatch(des1, des2, k=2)
+    end_time = time.time()
+    t2 = end_time - start_time
+    print('flann match done, time used:', t2)
+    start_time = time.time()
     good = list(filter(
         lambda match:
         match[0].distance < float(args["--ratio"]) * match[1].distance,  # type: ignore
@@ -506,15 +523,18 @@ if __name__ == "__main__" and __doc__:
     h1, w1 = img1.shape
     h2, w2 = img2.shape
     new_image = np.zeros((max(h1, h2), w1 + w2, 3), np.float32)
-    new_image[:h1, :w1, :] = plt.imread(args["<image1>"])[:, :, :3]
-    new_image[:h2, w1:w1 + w2, :] = plt.imread(args["<image2>"])[:, :, :3]
+    new_image[:h1, :w1, :] = plt.imread(args["<image1>"]).astype('uint8')[:, :, :3]
+    new_image[:h2, w1:w1 + w2, :] = plt.imread(args["<image2>"]).astype('uint8')[:, :, :3]
     fig, ax = plt.subplots()
     ax.set(xticks=[], yticks=[])
     for m, _ in good:
         pt1 = (int(kp1[m.queryIdx].pt[0]), int(kp1[m.queryIdx].pt[1]))
         pt2 = (int(kp2[m.trainIdx].pt[0] + w1), int(kp2[m.trainIdx].pt[1]))
-        ax.plot(*zip(pt1, pt2).astype('uint8'), 'r-', lw=0.5)
+        ax.plot(*zip(pt1, pt2), 'r-', lw=0.5)
     ax.imshow(new_image)
+    end_time = time.time()
+    t3 = end_time - start_time
+    print('all done, time used:', t3)
     if args["--output"]:
         plt.savefig(args["--output"])
     if not args["--dry-run"]:
