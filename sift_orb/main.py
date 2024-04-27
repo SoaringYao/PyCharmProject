@@ -527,19 +527,19 @@ if __name__ == "__main__" and __doc__:
     kp1, des1 = compute_keypoints_and_descriptors(img1)
     end_time = time.time()
     t0 = end_time - start_time
-    logger.info(f'img1 done, time used:{t0:.3f}s')
+    logger.info(f'img1 done, time used: {t0:.3f}s')
     start_time = time.time()
     kp2, des2 = compute_keypoints_and_descriptors(img2)
     end_time = time.time()
     t1 = end_time - start_time
-    logger.info(f'img2 done, time used:{t1:.3f}s')
+    logger.info(f'img2 done, time used: {t1:.3f}s')
     logger.info('orb beginning...')
     start_time = time.time()
     flann = cv2.FlannBasedMatcher(dict(algorithm=0, trees=5), dict(checks=50))
     matches = flann.knnMatch(des1, des2, k=2)
     end_time = time.time()
     t2 = end_time - start_time
-    logger.info(f'match done, time used:{t2:.3f}s')
+    logger.info(f'match done, time used: {t2:.3f}s')
     start_time = time.time()
     good = list(filter(
         lambda match:
@@ -559,7 +559,7 @@ if __name__ == "__main__" and __doc__:
     ax.imshow(new_image)
     end_time = time.time()
     t3 = end_time - start_time
-    logger.info(f'all done, time used:{t0 + t1 + t2 + t3:.3f}s')
+    logger.info(f'all done, time used: {t0 + t1 + t2 + t3:.3f}s')
     if args["--output"]:
         plt.savefig(args["--output"])
     if not args["--dry-run"]:
