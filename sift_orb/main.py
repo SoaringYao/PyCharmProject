@@ -15,7 +15,7 @@ options:
 import logging
 from functools import cmp_to_key
 
-from cv2 import resize, GaussianBlur, subtract, KeyPoint, INTER_LINEAR, INTER_NEAREST
+import cv2 as cv
 from numpy import (all, array, arctan2, cos, sin, exp, dot, log, logical_and, roll, sqrt, stack, trace, deg2rad,
                    rad2deg, where, zeros, floor, round, float32)
 from numpy.linalg import det, lstsq, norm
@@ -70,10 +70,10 @@ def generate_base_image(image, sigma, assumed_blur):
     """Generate base image from input image by upSampling by 2 in both directions and blurring
     """
     logger.info('Generating base image...')
-    image = resize(image, (0, 0), fx=2, fy=2, interpolation=INTER_LINEAR)
+    image = cv.resize(image, (0, 0), fx=2, fy=2, interpolation=cv.INTER_LINEAR)
     sigma_diff = sqrt(max((sigma ** 2) - ((2 * assumed_blur) ** 2), 0.01))
-    return GaussianBlur(image, (0, 0), sigmaX=sigma_diff,
-                        sigmaY=sigma_diff)  # the image blur is now sigma instead of assumed_blur
+    return cv.GaussianBlur(image, (0, 0), sigmaX=sigma_diff,
+                           sigmaY=sigma_diff)  # the image blur is now sigma instead of assumed_blur
 
 
 def compute_number_of_octaves(image_shape):
@@ -110,12 +110,12 @@ def generate_gaussian_images(image, num_octaves, gaussian_kernels):
     for octave_index in range(num_octaves):
         gaussian_images_in_octave = [image]  # first image in octave already has the correct blur
         for gaussian_kernel in gaussian_kernels[1:]:
-            image = GaussianBlur(image, (0, 0), sigmaX=gaussian_kernel, sigmaY=gaussian_kernel)
+            image = cv.GaussianBlur(image, (0, 0), sigmaX=gaussian_kernel, sigmaY=gaussian_kernel)
             gaussian_images_in_octave.append(image)
         gaussian_images.append(gaussian_images_in_octave)
         octave_base = gaussian_images_in_octave[-3]
-        image = resize(octave_base, (int(octave_base.shape[1] / 2), int(octave_base.shape[0] / 2)),
-                       interpolation=INTER_NEAREST)
+        image = cv.resize(octave_base, (int(octave_base.shape[1] / 2), int(octave_base.shape[0] / 2)),
+                          interpolation=cv.INTER_NEAREST)
     return array(gaussian_images, dtype=object)
 
 
@@ -128,9 +128,9 @@ def generate_do_g_images(gaussian_images):
     for gaussian_images_in_octave in gaussian_images:
         dog_images_in_octave = []
         for first_image, second_image in zip(gaussian_images_in_octave, gaussian_images_in_octave[1:]):
-            dog_images_in_octave.append(subtract(second_image,
-                                                 first_image))
-            # ordinary subtraction will not work because the images are unsigned integers
+            dog_images_in_octave.append(cv.subtract(second_image,
+                                                    first_image))
+            # ordinary cv.subtraction will not work because the images are unsigned integers
         dog_images.append(dog_images_in_octave)
     return array(dog_images, dtype=object)
 
@@ -233,8 +233,8 @@ def localize_extremum_via_quadratic_fit(i, j, image_index, octave_index, num_int
         xy_hessian_det = det(xy_hessian)
         if xy_hessian_det > 0 and eigenvalue_ratio * (xy_hessian_trace ** 2) < (
                 (eigenvalue_ratio + 1) ** 2) * xy_hessian_det:
-            # Contrast check passed -- construct and return OpenCV KeyPoint object
-            keypoint = KeyPoint()
+            # Contrast check passed -- construct and return OpenCV cv.KeyPoint object
+            keypoint = cv.KeyPoint()
             keypoint.pt = (
                 (j + extremum_update[0]) * (2 ** octave_index), (i + extremum_update[1]) * (2 ** octave_index))
             keypoint.octave = octave_index + image_index * (2 ** 8) + int(round((extremum_update[2] + 0.5) * 255)) * (
@@ -340,7 +340,7 @@ def compute_keypoints_with_orientations(keypoint, octave_index, gaussian_image, 
             orientation = 360. - interpolated_peak_index * 360. / num_bins
             if abs(orientation - 360.) < float_tolerance:
                 orientation = 0
-            new_keypoint = KeyPoint(*keypoint.pt, keypoint.size, orientation, keypoint.response, keypoint.octave)
+            new_keypoint = cv.KeyPoint(*keypoint.pt, keypoint.size, orientation, keypoint.response, keypoint.octave)
             keypoints_with_orientations.append(new_keypoint)
     return keypoints_with_orientations
 
