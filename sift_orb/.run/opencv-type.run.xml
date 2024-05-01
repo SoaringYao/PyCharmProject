@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="extreme-type" type="PythonConfigurationType" factoryName="Python">
+  <configuration default="false" name="opencv-type" type="PythonConfigurationType" factoryName="Python">
     <module name="sift_orb" />
     <option name="ENV_FILES" value="" />
     <option name="INTERPRETER_OPTIONS" value="" />
@@ -15,7 +15,7 @@
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
     <option name="SCRIPT_NAME" value="$PROJECT_DIR$/sift.py" />
-    <option name="PARAMETERS" value="-d -r 0.4 -ofigures/sift_extreme.png figures/input0.png figures/input1.png" />
+    <option name="PARAMETERS" value="figures/input0.png figures/input1.png" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
     <option name="MODULE_MODE" value="false" />
