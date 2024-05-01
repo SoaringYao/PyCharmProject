@@ -15,7 +15,7 @@
 
 ```
 │   fh.log              #利用logging生成的程序运行日志
-│   main.py             #代码
+│   sift.py             #代码
 │   readme.md           #简介
 │   
 ├───.idea               #IDE生成的配置文件
@@ -64,6 +64,6 @@
 
 ## 说明
 
-程序源代码在[此处](./main.py)
+程序源代码在[此处](./sift.py)
 
 详细的程序介绍和结果分析在[此处](./Writerside/topics/starter-topic.md)
