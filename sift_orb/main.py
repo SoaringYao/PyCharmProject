@@ -3,7 +3,7 @@
 
 Use SIFT to match two pictures.
 
-usage: sift.py [-hVn] [-df] [-r <ratio>] [-o <output>] <image1> <image2>
+usage: sift.py [-hVn] [-d] [-r <ratio>] [-o <output>] <image1> <image2>
 
 options:
     -h, --help                  Show this screen.
@@ -11,7 +11,7 @@ options:
     -n, --dry-run               Without an image in a window.
     -d, --debug                 Show log messages, slow but clear process form https://github.com/rmislam/PythonSIFT
     -r, --ratio <ratio>         Lowe's ratio. (more-tolerant:0.6; more-extreme:0.4) [default: 0.5]
-    -o, --output <output>       Output to an image file. [default: figures/output/sift_t.png]
+    -o, --output <output>       Output to an image file. [default: figures/sift.png]
 
 """
 import logging
