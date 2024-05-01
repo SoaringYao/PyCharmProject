@@ -32,7 +32,7 @@ print(type(logger))
 # 标准输出
 sh = logging.StreamHandler()
 # 文件输出
-# 没有设置输出级别，将用logger的输出级别(并且输出级别在设置的时候级别不能比Logger的低!!!)，设置了就使用自己的输出级别
+# 没有设置输出级别，将用logger的输出级别(并且输出级别在设置的时候级别不能比Logger的低)，设置了就使用自己的输出级别
 fh = logging.FileHandler(filename="fh.log", mode='w')
 
 # 格式器
