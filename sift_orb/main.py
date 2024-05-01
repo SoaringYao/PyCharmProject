@@ -3,14 +3,16 @@
 
 Use SIFT to match two pictures.
 
-usage: sift.py [-hVn] [-r <ratio>] [-o <output>] <image1> <image2>
+usage: sift.py [-hVn] [-df] [-r <ratio>] [-o <output>] <image1> <image2>
 
 options:
     -h, --help                  Show this screen.
     -V, --version               Show version.
+    -n, --dry-run               Without an image in a window.
+    -d, --debug                 Show log messages, slow but clear process form https://github.com/rmislam/PythonSIFT
     -r, --ratio <ratio>         Lowe's ratio. (more-tolerant:0.6; more-extreme:0.4) [default: 0.5]
     -o, --output <output>       Output to an image file. [default: figures/output/sift_t.png]
-    -n, --dry-run               Without an image in a window.
+
 """
 import logging
 from functools import cmp_to_key
@@ -59,7 +61,7 @@ def compute_keypoints_and_descriptors(image, sigma=1.6, num_intervals=3, assumed
     gaussian_kernels = generate_gaussian_kernels(sigma, num_intervals)
     gaussian_images = generate_gaussian_images(base_image, num_octaves, gaussian_kernels)
     dog_images = generate_do_g_images(gaussian_images)
-    keypoints = find_scale_space_extrema(gaussian_images, dog_images, num_intervals, sigma, image_border_width)
+    keypoints = find_scale_space_extremum(gaussian_images, dog_images, num_intervals, sigma, image_border_width)
     keypoints = remove_duplicate_keypoints(keypoints)
     keypoints = convert_keypoints_to_input_image_size(keypoints)
     descriptors = generate_descriptors(keypoints, gaussian_images)
@@ -135,11 +137,11 @@ def generate_do_g_images(gaussian_images):
     return array(dog_images, dtype=object)
 
 
-def find_scale_space_extrema(gaussian_images, dog_images, num_intervals, sigma, image_border_width,
-                             contrast_threshold=0.04):
-    """Find pixel positions of all scale-space extrema in the image pyramid
+def find_scale_space_extremum(gaussian_images, dog_images, num_intervals, sigma, image_border_width,
+                              contrast_threshold=0.04):
+    """Find pixel positions of all scale-space extremum in the image pyramid
     """
-    logger.info('Finding scale-space extrema...')
+    logger.info('Finding scale-space extremum...')
     threshold = floor(0.5 * contrast_threshold / num_intervals * 255)  # from OpenCV implementation
     keypoints = []
 
@@ -523,23 +525,35 @@ if __name__ == "__main__" and __doc__:
     logger.info('sift beginning...')
     img1 = cv2.imread(args["<image1>"], 0)
     img2 = cv2.imread(args["<image2>"], 0)
-    start_time = time.time()
-    kp1, des1 = compute_keypoints_and_descriptors(img1)
-    end_time = time.time()
-    t0 = end_time - start_time
-    logger.info(f'img1 done, time used: {t0:.3f}s')
-    start_time = time.time()
-    kp2, des2 = compute_keypoints_and_descriptors(img2)
-    end_time = time.time()
-    t1 = end_time - start_time
-    logger.info(f'img2 done, time used: {t1:.3f}s')
-    logger.info('orb beginning...')
+
+    if args["--debug"]:
+        start_time = time.time()
+        kp1, des1 = compute_keypoints_and_descriptors(img1)
+        end_time = time.time()
+        t0 = end_time - start_time
+        logger.info(f'img1 done, time used: {t0:.3f}s')
+        start_time = time.time()
+        kp2, des2 = compute_keypoints_and_descriptors(img2)
+        end_time = time.time()
+        t = end_time - start_time
+        logger.info(f'img2 done, time used: {t:.3f}s')
+        t0 = t0 + t
+        logger.info('match beginning...')
+    else:
+        start_time = time.time()
+        sift = cv2.SIFT.create()
+        kp1, des1 = sift.detectAndCompute(img1, None)
+        kp2, des2 = sift.detectAndCompute(img2, None)
+        end_time = time.time()
+        t0 = end_time - start_time
+        logger.info(f'orb done, time used: {t0:.3f}s')
+
     start_time = time.time()
     flann = cv2.FlannBasedMatcher(dict(algorithm=0, trees=5), dict(checks=50))
     matches = flann.knnMatch(des1, des2, k=2)
     end_time = time.time()
-    t2 = end_time - start_time
-    logger.info(f'match done, time used: {t2:.3f}s')
+    t1 = end_time - start_time
+    logger.info(f'match done, time used: {t1:.3f}s')
     start_time = time.time()
     good = list(filter(
         lambda match:
@@ -558,8 +572,8 @@ if __name__ == "__main__" and __doc__:
         ax.plot(*zip(pt1, pt2), 'r-', lw=0.5)
     ax.imshow(new_image)
     end_time = time.time()
-    t3 = end_time - start_time
-    logger.info(f'all done, time used: {t0 + t1 + t2 + t3:.3f}s')
+    t2 = end_time - start_time
+    logger.info(f'all done, time used: {t0 + t1 + t2:.3f}s')
     if args["--output"]:
         plt.savefig(args["--output"])
     if not args["--dry-run"]:
