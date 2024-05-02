@@ -64,6 +64,6 @@
 
 ## 说明
 
-程序源代码在[此处](./sift.py)
-
-详细的程序介绍和结果分析在[此处](./Writerside/topics/starter-topic.md)
+1. 程序源代码在[此处](./sift.py)
+2. 详细的程序介绍和结果分析在[此处](./Writerside/topics/starter-topic.md)
+3. 运行代码的环境为 python 3.11, 依赖的库见[此处](./requirements.txt)
