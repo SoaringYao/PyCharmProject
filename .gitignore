@@ -61,3 +61,4 @@ RGB2YUV/Writerside/c.list
 *.list
 *.cfg
 *.log
+pytorch/data/cifar-10-python.tar.gz
